@@ -201,5 +201,21 @@ bind_framebuffer(GLuint& image, GLuint& depth, GLuint& frame_buffer)
     }
 }
 
+void
+delete_buffer(GLuint buffer,
+              GLuint buffer_target,
+              cudaGraphicsResource_t cuda_resource)
+{
+    CUDA(cudaGraphicsUnregisterResource(cuda_resource));
+    if (buffer_target == GL_RENDERBUFFER) {
+        glBindRenderbuffer(buffer_target, buffer);
+        glDeleteRenderbuffers(1, &buffer);
+        buffer = 0;
+    } else {
+        glBindBuffer(buffer_target, buffer);
+        glDeleteRenderbuffers(1, &buffer);
+        buffer = 0;
+    }
+}
 
 #endif // UTILITY
