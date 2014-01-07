@@ -12,7 +12,7 @@
 #include <cuda_runtime.h>
 #include <cuda_gl_interop.h>
 
-#include "util_shaders.hpp"
+#include "shaders.h"
 
 #define CUDA(x) do {                                                        \
     cudaError_t err = (x);                                                  \
