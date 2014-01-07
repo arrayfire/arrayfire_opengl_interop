@@ -149,13 +149,13 @@ int main(int argc, char* argv[])
         int num_triangles = 1, num_vertices = 3;
 
         array af_indices = array(3, indices);
-        array af_vertices = array(3, num_vertices, vertices);	//3 floats per vertex, 3 vertices
-        array af_colors = array(3, num_vertices, colors);		//3 floats per color, 3 colors
+        array af_vertices = array(3, num_vertices, vertices);   //3 floats per vertex, 3 vertices
+        array af_colors = array(3, num_vertices, colors);       //3 floats per color, 3 colors
         array af_image = constant(0.0, height, width, channels);
         array pkd_image = constant(0.0, channels, width, height);
         array af_project = constant(-1.0, 3, num_vertices);
 
-        bool onscreen = true;			//Change to false for offscreen renderering
+        bool onscreen = true;           //Change to false for offscreen renderering
         init_glfw(width, height, channels, onscreen);
 
         // Initialize CUDA-OpenGL Data
@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
         cudaGraphicsResource_t index_cuda;
         glGenBuffers(1, &index_b);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_b);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * sizeof(unsigned), indices, GL_STATIC_READ);	//One time copy
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * sizeof(unsigned), indices, GL_STATIC_READ);   //One time copy
         CUDA(cudaGraphicsGLRegisterBuffer(&index_cuda, index_b, cudaGraphicsRegisterFlagsNone));
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
@@ -267,7 +267,7 @@ int main(int argc, char* argv[])
                                        width * height * channels * sizeof(float));
                 pkd_image.unlock();
                 af_image = unpacked(pkd_image);
-                glfwMakeContextCurrent(NULL);		// Need to unset context sinze ArrayFire uses its own for graphics
+                glfwMakeContextCurrent(NULL);       // Need to unset context sinze ArrayFire uses its own for graphics
                 image(af_image);
                 saveimage("test.png", af_image);
                 getchar();
