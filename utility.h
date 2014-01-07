@@ -28,9 +28,9 @@ static GLFWwindow* window = NULL;
 static GLuint shader_program = 0;
 
 static const float vertices[] = {
-    0.0f,  0.6f, 0.0f,
-   -0.6f, -0.6f, 0.0f,
-    0.6f, -0.6f, 0.0f,
+    0.0f,  0.8f, 0.0f,
+   -0.6f, -0.4f, 0.0f,
+    0.6f, -0.4f, 0.0f,
 };
 
 static const float colors[] = {
@@ -89,7 +89,7 @@ init_glfw(const int buffer_width, const int buffer_height,
         glfwWindowHint(GLFW_DEPTH_BITS, buffer_depth * 8);
         glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
         window = glfwCreateWindow(buffer_width, buffer_height,
-                                    "ArrayFire CUDA OpenGL Interop", NULL, NULL);
+                                    "ArrayFire OpenGL Interop", NULL, NULL);
         if (!window) {
             glfwTerminate();
             //Comment/Uncomment these lines incase using fall backs

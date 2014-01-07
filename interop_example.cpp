@@ -87,6 +87,7 @@ render(GLuint vertex_b,
     glDrawElements(GL_TRIANGLES, num_triangles * 3, GL_UNSIGNED_INT, 0);
 
     // Transform Feedback rendering
+    // Runs only vertex shaders and then discards all polygons
     // Gets values back from vertex shader - optional
     glEnable(GL_RASTERIZER_DISCARD);
     glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, transform_b);
@@ -95,6 +96,7 @@ render(GLuint vertex_b,
     glEndTransformFeedback();
     glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
     glDisable(GL_RASTERIZER_DISCARD);
+    // End transform feedback
 
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
@@ -204,7 +206,7 @@ int main(int argc, char* argv[])
         array pkd_image = constant(0.0, channels, width, height);
         array af_project = constant(-1.0, 3, num_vertices);
 
-        bool onscreen = false;           //Change to false for offscreen renderering
+        bool onscreen = true;           //Change to false for offscreen renderering
         init_glfw(width, height, channels, onscreen);
 
         // Initialize CUDA-OpenGL Data
