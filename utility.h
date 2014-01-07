@@ -27,19 +27,19 @@ static bool display;
 static GLFWwindow* window = NULL;
 static GLuint shader_program = 0;
 
-static float vertices[] = {
-    0.0f,  0.8f, 0.0f,
-   -0.6f, -0.8f, 0.0f,
-    0.6f, -0.8f, 0.0f,
+static const float vertices[] = {
+    0.0f,  0.6f, 0.0f,
+   -0.6f, -0.6f, 0.0f,
+    0.6f, -0.6f, 0.0f,
 };
 
-static float colors[] = {
+static const float colors[] = {
     1.0f, 0.0f, 0.0f,
     0.0f, 1.0f, 0.0f,
     0.0f, 0.0f, 1.0f,
 };
 
-static unsigned indices[] = {
+static const unsigned indices[] = {
     0, 1, 2
 };
 
@@ -216,6 +216,20 @@ delete_buffer(GLuint buffer,
         glDeleteRenderbuffers(1, &buffer);
         buffer = 0;
     }
+}
+
+af::array
+rotate_z(const af::array& input, const float theta)
+{
+    float rot_mat[] = { cos(theta),  sin(theta), 0,
+                       -sin(theta),  cos(theta), 0,
+                        0,           0,          1};
+    af::array rot = af::array(3, 3, rot_mat);
+    af::array output = input.copy();
+    gfor(af::array i, input.dims(1)) {
+        output(af::span, i) = af::matmul(rot, input(af::span, i));
+    }
+    return output;
 }
 
 #endif // UTILITY
