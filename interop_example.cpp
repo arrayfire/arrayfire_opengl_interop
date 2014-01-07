@@ -177,19 +177,19 @@ int main(int argc, char* argv[])
     CUDA(cudaGraphicsGLRegisterImage(&render_cuda, render_b, GL_RENDERBUFFER, cudaGraphicsRegisterFlagsNone));
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-    // Depth Buffer
+    // Depth Buffer - for off screen rendering
     GLuint depth_b = 0;
     glGenRenderbuffers(1, &depth_b);
     glBindRenderbuffer(GL_RENDERBUFFER, depth_b);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-    // Initialize shaders
-    init_program("shader.vert", "shader.frag");
-
     //Required for framebuffer copy
     GLuint frame_b = 0;
     bind_framebuffer(render_b, depth_b, frame_b);
+
+    // Initialize shaders
+    init_program("shader.vert", "shader.frag");
 
     // Initialize transform feedback
     init_projection(transform_b, project_b);
