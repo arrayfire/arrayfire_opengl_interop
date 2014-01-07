@@ -21,7 +21,7 @@ File Description
 Despcription
 -------------------------
 The description for this code can be found on the ArrayFire blogs page:
-http://blog.accelereyes.com/blog/2014/01/07/arrayfire-open…rop-using-cuda/
+http://blog.accelereyes.com/blog/2014/01/07/arrayfire-opengl-interop-using-cuda/
 
 Forum
 ------------------------
