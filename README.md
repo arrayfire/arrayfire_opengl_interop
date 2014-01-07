@@ -5,18 +5,17 @@ This project demonstrates OpenGL interoperability with ArrayFire.
 
 File Description
 ------------------------
-* cugl_interop.cpp
-    This file shows how to use ArrayFire with OpenGL using the CUDA Grpahics
-    Interop API.
-* utility.h
+* **cugl_interop.cpp**
+    This file shows how to use ArrayFire with OpenGL and CUDA.
+* **utility.h**
     Contains useful OpenGL and ArrayFire function.
-* shaders.h
+* **shaders.h**
     Contains code to load and compile shaders.
-* shader.vert
+* **shader.vert**
     Vertex shader
-* shader.frag
+* **shader.frag**
     Fragment shader
-* Makefile
+* **Makefile**
     Linux makefile for compilation
 
 Despcription
