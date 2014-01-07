@@ -52,9 +52,9 @@ NVCCFLAGS += -ccbin $(CXX) $(ARCH_FLAGS) $(CUDA_DEBUG) $(CUDA_OPTIMISE)\
 
 # Files which require compiling
 SOURCE_FILES=\
-	interop_example.cpp
+	cugl_interop.cpp
 
-OUT=interop
+OUT=cugl_interop
 
 all: $(OUT)
 
