@@ -68,6 +68,58 @@ af::array packed(const af::array& a)
 }
 
 void
+init_glfw(const int buffer_width, const int buffer_height,
+          const int buffer_depth, const bool set_display)
+{
+    if (window == NULL) {
+        glfwSetErrorCallback(error_callback);
+        if (!glfwInit()) {
+            std::cerr << "ERROR: GLFW wasn't able to initalize" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+
+        if(buffer_depth <=0 || buffer_depth > 4) {
+            std::cerr << "ERROR: Depth value must be between 1 and 4" << std::endl;
+        }
+
+        display = set_display;
+        if(!display)
+            glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+
+        glfwWindowHint(GLFW_DEPTH_BITS, buffer_depth * 8);
+        glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+        window = glfwCreateWindow(buffer_width, buffer_height,
+                                    "ArrayFire CUDA OpenGL Interop", NULL, NULL);
+        if (!window) {
+            glfwTerminate();
+            //Comment/Uncomment these lines incase using fall backs
+            //return;
+            std::cerr << "ERROR: GLFW couldn't create a window." << std::endl;
+            exit(EXIT_FAILURE);
+        }
+
+        glfwMakeContextCurrent(window);
+        glfwSwapInterval(1);
+        int b_width = buffer_width;
+        int b_height = buffer_height;
+        int b_depth = buffer_depth;
+        glfwGetFramebufferSize(window, &b_width, &b_height);
+        glfwSetTime(0.0);
+
+        glfwSetKeyCallback(window, key_callback);
+
+        //GLEW Initialization - Must be done
+        GLenum res = glewInit();
+        if (res != GLEW_OK) {
+            std::cerr << "Error Initializing GLEW | Exiting" << std::endl;
+            exit(-1);
+        }
+        //Put in resize
+        glViewport(0, 0, b_width, b_height);
+    }
+}
+
+void
 init_program(const char* vertex_shader_path, const char* frag_shader_path)
 {
     shaders_t shaders = loadShaders(vertex_shader_path, frag_shader_path);
@@ -78,61 +130,6 @@ init_program(const char* vertex_shader_path, const char* frag_shader_path)
 
     glUseProgram(shader_program);
 }
-
-void
-unmap_resource(cudaGraphicsResource_t cuda_resource,
-               bool is_mapped)
-{
-    if (is_mapped) {
-        CUDA(cudaGraphicsUnmapResources(1, &cuda_resource));
-        is_mapped = false;
-    }
-}
-
-// Gets the device pointer from the mapped resource
-// Sets is_mapped to true
-template<typename T>
-void copy_from_device_pointer(cudaGraphicsResource_t cuda_resource,
-                              T& d_ptr,
-                              GLuint buffer_target,
-                              const unsigned size)
-{
-    CUDA(cudaGraphicsMapResources(1, &cuda_resource));
-    bool is_mapped = true;
-    if (buffer_target == GL_RENDERBUFFER) {
-        cudaArray* array_ptr = NULL;
-        CUDA(cudaGraphicsSubResourceGetMappedArray(&array_ptr, cuda_resource, 0, 0));
-        CUDA(cudaMemcpyToArray(array_ptr, 0, 0, d_ptr, size, cudaMemcpyDeviceToDevice));
-    } else {
-        T* opengl_ptr = NULL;
-        CUDA(cudaGraphicsResourceGetMappedPointer((void**)&opengl_ptr, (size_t*)&size, cuda_resource));
-        CUDA(cudaMemcpy(opengl_ptr, d_ptr, size, cudaMemcpyDeviceToDevice));
-    }
-    unmap_resource(cuda_resource, is_mapped);
-}
-
-// Gets the device pointer from the mapped resource
-// Sets is_mapped to true
-template<typename T>
-void copy_to_device_pointer(cudaGraphicsResource_t cuda_resource,
-                            T& d_ptr,
-                            GLuint buffer_target,
-                            const unsigned size)
-{
-    cudaGraphicsMapResources(1, &cuda_resource);
-    bool is_mapped = true;
-    if (GL_RENDERBUFFER == buffer_target) {
-        cudaArray* array_ptr;
-        CUDA(cudaGraphicsSubResourceGetMappedArray(&array_ptr, cuda_resource, 0, 0));
-        CUDA(cudaMemcpyFromArray(d_ptr, array_ptr, 0, 0, size, cudaMemcpyDeviceToDevice));
-    } else {
-        T* opengl_ptr = NULL;
-        CUDA(cudaGraphicsResourceGetMappedPointer((void**)&opengl_ptr, (size_t*)&size, cuda_resource));
-        CUDA(cudaMemcpy(d_ptr, opengl_ptr, size, cudaMemcpyDeviceToDevice));
-    }
-    unmap_resource(cuda_resource, is_mapped);
-}
-
 
 void
 init_projection(GLuint& transform_b, GLuint& project_b)
@@ -198,23 +195,6 @@ bind_framebuffer(GLuint& image, GLuint& depth, GLuint& frame_buffer)
             exit(-1);
         }
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
-}
-
-void
-delete_buffer(GLuint buffer,
-              GLuint buffer_target,
-              cudaGraphicsResource_t cuda_resource)
-{
-    CUDA(cudaGraphicsUnregisterResource(cuda_resource));
-    if (buffer_target == GL_RENDERBUFFER) {
-        glBindRenderbuffer(buffer_target, buffer);
-        glDeleteRenderbuffers(1, &buffer);
-        buffer = 0;
-    } else {
-        glBindBuffer(buffer_target, buffer);
-        glDeleteRenderbuffers(1, &buffer);
-        buffer = 0;
     }
 }
 

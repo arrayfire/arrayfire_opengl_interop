@@ -79,4 +79,4 @@ set_debug:
 clean:
 	@echo "Cleaning"
 	rm $(OUT)
-	done
+	@echo done
