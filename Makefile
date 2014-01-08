@@ -7,7 +7,7 @@
 #include Makefile.local
 
 # Paths
-AF_PATH?=/home/accelereyes/jacket/arrayfire
+AF_PATH?=/opt/arrayfire-2.0
 CUDA?=/usr/local/cuda
 GLFW_LIB_PATH?=/usr/local/lib
 
